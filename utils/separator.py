@@ -6,24 +6,22 @@ class DataSeparator:
     def __init__(self):
 
         self.dirs = {}
-        self.dirs['cnn_dir'] = os.path.dirname(os.getcwd())
-        self.dirs['origin_data_dir'] = os.path.join(self.dirs['cnn_dir'], "dogs_vs_cats_origin")
-        self.data_amount = len(os.listdir(self.dirs['origin_data_dir']))  # クラスごと別れていない前提
+        self.dirs['prj_root'] = os.path.dirname(os.getcwd())
+        self.dirs['data_dir'] = os.path.join(self.dirs['prj_root'], "datasets")
+
+        ignore_files = ['.DS_Store']
+
+        # class label name
+        raw_class_list = os.listdir( os.path.join(self.dirs["data_dir"] , "train") )
+        for fname in ignore_files:
+            if fname in raw_class_list:
+                raw_class_list.remove(fname)
+        self.class_list = sorted(raw_class_list)
 
         # train / valid / test data を配置する dir
         self.data_purpose_list = ["train", "validation", "test"]
 
-        # class label name
-        self.class_label = ["cat", "dog"]
-
         # dict = { split_size:[train_size, validation_size, test_size] }
-        self.split_dict = {}
-        self.split_dict['smaller'] = [50, 25, 25]
-        self.split_dict['mid300'] = [150, 50, 50]
-        self.split_dict['full'] = [10000, 2500, 2500]
-        self.split_dict['mid_test'] = [50, 25, 50]
-        self.split_dict['large_test'] = [50, 25, 100]
-
 
 
     def separate(self, split_size='smaller'):
@@ -143,6 +141,7 @@ class DataSeparator:
 
 if __name__ == '__main__':
 
+    """
     import argparse
 
     parser = argparse.ArgumentParser(description="origin data から トレーニング用のデータを切り分けるプログラム")
@@ -151,13 +150,18 @@ if __name__ == '__main__':
     parser.add_argument("--make_gtest", action="store_true", default=False, help="global test を作成")
 
     args = parser.parse_args()
+    """
 
     ds = DataSeparator()
+    print(ds.dirs)
+    print(ds.class_list)
 
+    """
     if args.make_dataset:
         ds.separate(split_size='smaller')
         #ds.separate(split_size='large_test')
 
     if args.make_gtest:
         ds.makeGlobalTest()
+    """
 
