@@ -3,6 +3,7 @@
 import os, sys
 sys.path.append(os.pardir)
 
+import gc
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -52,12 +53,13 @@ def loadImageFromDir(target_dir, input_size, ch='RGB'):
 
     pic_list = os.listdir(target_dir)
 
-    for canditate in ignore_list:
-        if canditate in pic_list:
-            pic_list.remove(canditate)
+    for fname in ignore_list:
+        if fname in pic_list:
+            pic_list.remove(fname)
 
     sorted_pic_list = sorted(pic_list)
-    print("found {} images ...".format(len(pic_list)))
+    del pic_list
+    print("found {} images ...".format(len(sorted_pic_list)))
 
     img_arrays = []
     for picture in sorted_pic_list:
@@ -67,7 +69,8 @@ def loadImageFromDir(target_dir, input_size, ch='RGB'):
 
     img_arrays = np.array(img_arrays)
 
-    assert img_arrays.shape[0] == len(pic_list)
+    assert img_arrays.shape[0] == len(sorted_pic_list)
+    gc.collect()
 
     return img_arrays
 
@@ -97,9 +100,9 @@ def inputDataCreator(target_dir, input_size, normalize=False, one_hot=False, ch=
 
     class_list = os.listdir(target_dir)
 
-    for canditate in ignore_list:
-        if canditate in class_list:
-            class_list.remove(canditate)
+    for fname in ignore_list:
+        if fname in class_list:
+            class_list.remove(fname)
 
     print("found {} classes ...".format(len(class_list)))
 
@@ -110,6 +113,7 @@ def inputDataCreator(target_dir, input_size, normalize=False, one_hot=False, ch=
     label = []
 
     sorted_class_list = sorted(class_list)
+    del class_list
     for class_num, class_name in enumerate(sorted_class_list):
         each_class_data_dir = os.path.join(target_dir, class_name)
         print("processing class {} as {} ".format(class_num, class_name), end="")
@@ -117,20 +121,28 @@ def inputDataCreator(target_dir, input_size, normalize=False, one_hot=False, ch=
         each_class_img_arrays = loadImageFromDir(each_class_data_dir, input_size, ch)
         label = np.full(each_class_img_arrays.shape[0], class_num)
 
-        if img_arrays == []:
+        if len(img_arrays) == 0:
             img_arrays = each_class_img_arrays
         else:
             img_arrays = np.vstack((img_arrays, each_class_img_arrays))
 
-        if label == []:
+        if len(label) == 0:
             labels = label
         else:
             labels = np.hstack((labels, label))
 
+    del each_class_img_arrays
+
     if normalize:
-        img_arrays = img_arrays / 255
+        #f = lambda x: x/255.0
+        #np.frompyfunc(f, 1, 1)(img_arrays)
+        #img_arrays/255
+        img_arrays = img_arrays / 255.0
+        #pass
 
     img_arrays = np.array(img_arrays)
+    if ch == 'gray':
+        img_arrays = np.expand_dims(img_arrays, axis=3)
     labels = np.array(labels)
 
     print("debug: ", labels[1])
@@ -139,6 +151,8 @@ def inputDataCreator(target_dir, input_size, normalize=False, one_hot=False, ch=
         labels = np.identity(2)[labels.astype(np.int8)]
 
     assert img_arrays.shape[0] == labels.shape[0]
+
+    gc.collect()
 
     return img_arrays, labels
 
@@ -354,19 +368,23 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     if args.test:
+        """
         print("\ntesting load_img():")
         single_img_array = load_img(single_sample, 224)
         print("  result: ", single_img_array.shape)
 
+
         print("\ntesting loadImageFromDir():")
         train_data = loadImageFromDir(train_normal_dir, 224)
         print("  result: ", train_data.shape)
+        """
 
         print("\ntesting inputDataCreator(train_data_dir, 224, normalize=False, one_hot=True:")
         data, label = inputDataCreator(train_dir,
                                        224,
-                                       normalize=False,
-                                       one_hot=True)
+                                       normalize=True,
+                                       one_hot=True,
+                                       ch='gray')
         print("  result (data shape) : ", data.shape)
         print("    data: \n", data[0])
         print("  result (label shape): ", label.shape)
