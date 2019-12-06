@@ -36,7 +36,7 @@ def load_img(fpath, array_size, ch='RGB'):
 
 
 
-def loadImageFromDir(target_dir, input_size, ch='RGB'):
+def loadImageFromDir(target_dir, input_size, normalize=False, ch='RGB'):
     """ディレクトリを指定して、その中にある画像を再帰的に読み込む
 
     # Args:
@@ -65,6 +65,8 @@ def loadImageFromDir(target_dir, input_size, ch='RGB'):
     for picture in sorted_pic_list:
         target = os.path.join(target_dir, picture)
         img_arr = load_img(target, input_size, ch)
+        if normalize:
+            img_arr = img_arr / 255.0
         img_arrays.append(img_arr)
 
     img_arrays = np.array(img_arrays)
@@ -118,7 +120,7 @@ def inputDataCreator(target_dir, input_size, normalize=False, one_hot=False, ch=
         each_class_data_dir = os.path.join(target_dir, class_name)
         print("processing class {} as {} ".format(class_num, class_name), end="")
 
-        each_class_img_arrays = loadImageFromDir(each_class_data_dir, input_size, ch)
+        each_class_img_arrays = loadImageFromDir(each_class_data_dir, input_size, normalize, ch)
         label = np.full(each_class_img_arrays.shape[0], class_num)
 
         if len(img_arrays) == 0:
@@ -133,12 +135,12 @@ def inputDataCreator(target_dir, input_size, normalize=False, one_hot=False, ch=
 
     del each_class_img_arrays
 
+    """ 場所を変えよう
     if normalize:
-        #f = lambda x: x/255.0
-        #np.frompyfunc(f, 1, 1)(img_arrays)
-        #img_arrays/255
+        print(sys.getsizeof(img_arrays))
         img_arrays = img_arrays / 255.0
         #pass
+    """
 
     img_arrays = np.array(img_arrays)
     if ch == 'gray':
@@ -379,12 +381,12 @@ if __name__ == '__main__':
         print("  result: ", train_data.shape)
         """
 
-        print("\ntesting inputDataCreator(train_data_dir, 224, normalize=False, one_hot=True:")
+        print("\ntesting inputDataCreator(train_data_dir, 224, normalize, one_hot):")
         data, label = inputDataCreator(train_dir,
                                        224,
                                        normalize=True,
                                        one_hot=True,
-                                       ch='gray')
+                                       ch='RGB')
         print("  result (data shape) : ", data.shape)
         print("    data: \n", data[0])
         print("  result (label shape): ", label.shape)
