@@ -5,9 +5,23 @@ import os, sys
 sys.path.append(os.pardir)
 
 import time
+import tensorflow as tf
+config=tf.ConfigProto()
+config.gpu_options.allow_growth=True
+sess=tf.Session(config=config)
 
-from utils.img_utils import inputDataCreator
+from keras.preprocessing.image import ImageDataGenerator
+#from utils.img_utils import inputDataCreator
 from utils.model_handler import ModelHandler
+
+# define -----
+batch_size = 16
+input_size = 224
+channel = 3
+target_size = (input_size, input_size)
+input_shpe = (input_size, input_size, channel)
+set_epochs = 20
+
 
 def main():
 
@@ -21,30 +35,34 @@ def main():
 
 
     # data load ----------
-    train_data, train_label = inputDataCreator(train_dir,
-                                               224,
-                                               normalize=True,
-                                               one_hot=True,
-                                               ch='gray')
+    data_gen = ImageDataGenerator(rescale=1/225)
 
-    validation_data, validation_label = inputDataCreator(validation_dir,
-                                                         224,
-                                                         normalize=True,
-                                                         one_hot=True,
-                                                         ch='gray')
+    train_generator = data_gen.flow_from_directory(train_dir,
+                                                   target_size=target_size,
+                                                   batch_size=batch_size,
+                                                   shuffle=True,
+                                                   class_mode='categorical')
+                                                           
+    validation_generator = data_gen.flow_from_directory(validation_dir,
+                                                        target_size=target_size,
+                                                        batch_size=batch_size,
+                                                        shuffle=True,
+                                                        class_mode='categorical')
+                                                           
+    test_generator = data_gen.flow_from_directory(test_dir,
+                                                  target_size=target_size,
+                                                  batch_size=batch_size,
+                                                  shuffle=True,
+                                                  class_mode='categorical')
 
-    test_data, test_label = inputDataCreator(test_dir,
-                                             224,
-                                             normalize=True,
-                                             one_hot=True,
-                                             ch='gray')
+    data_checker, label_checker = next(train_generator)
 
-    print("train data shape:", train_data.shape)
-    print("train label shape:", train_label.shape)
-    print("validation data shape:", validation_data.shape)
-    print("validation label shape:", validation_label.shape)
-    print("test data shape:", test_data.shape)
-    print("test label shape:", test_label.shape)
+    print("train data shape (in batch): ", data_checker.shape)
+    print("train label shape (in batch): ", label_checker.shape)
+    # print("validation data shape:", validation_data.shape)
+    # print("validation label shape:", validation_label.shape)
+    # print("test data shape:", test_data.shape)
+    # print("test label shape:", test_label.shape)
     
 
     # build model ----------
@@ -54,26 +72,31 @@ def main():
 
     model.summary()
 
+
+    print("\ntraining sequence start .....")
+    steps_per_epoch = train_generator.n // batch_size
+    validation_steps = validation_generator.n // batch_size
+    print(steps_per_epoch, " [steps / epoch]")
+    print(validation_steps, " (validation steps)")                
+
     start = time.time()
-    history = model.fit(train_data,
-                        train_label,
-                        batch_size=32,
-                        epochs=20,
-                        validation_data=(validation_data, validation_label),
-                        verbose=1)
+
+    history = model.fit_generator(train_generator,
+                                  steps_per_epoch=steps_per_epoch,
+                                  epochs=set_epochs,
+                                  validation_data=validation_generator,
+                                  validation_steps=validation_steps,
+                                  verbose=1)
     print( "elapsed time (for train): {} [sec]".format(time.time() - start) )
 
 
     print("\nevaluate sequence...")
-
-    eval_res = model.evaluate(test_data,
-                              test_label,
-                              #batch_size=10,
-                              verbose=1)
+    eval_res = model.evaluate_generator(test_generator,
+                                        #batch_size=10,
+                                        verbose=1)
 
     print("result loss: ", eval_res[0])
     print("result score: ", eval_res[1])
-
 
 
 if __name__ == '__main__':
