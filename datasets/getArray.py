@@ -33,7 +33,7 @@ test_1_dir = os.path.join(test_dir, class_list[1])
 train_0_dir_list = sorted(os.listdir(train_0_dir))
 
 # class 0 ----------
-print(train_0_dir_list[0])
+#print(train_0_dir_list[0])
 
 start = time.time()
 
