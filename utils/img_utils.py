@@ -336,10 +336,12 @@ if __name__ == '__main__':
     cwd = os.getcwd()
     prj_root = os.path.dirname(cwd)
 
-    data_dir = os.path.join(prj_root, "dogs_vs_cats_smaller")
-    train_data_dir = os.path.join(data_dir, "train")
-    cat_train_data_dir = os.path.join(train_data_dir, "cat")
-    sample_cat = os.path.join(cat_train_data_dir, "cat.0.jpg")
+    data_dir = os.path.join(prj_root, "datasets")
+    train_dir = os.path.join(data_dir, "train")
+    train_normal_dir = os.path.join(train_dir, "NORMAL")
+    train_normal_samples = os.listdir(train_normal_dir)[:10]
+    single_sample = os.path.join(train_normal_dir, train_normal_samples[0])
+    print("fname: ", single_sample)
 
     import argparse
 
@@ -353,29 +355,15 @@ if __name__ == '__main__':
 
     if args.test:
         print("\ntesting load_img():")
-        single_img_array = load_img(sample_cat, 224)
+        single_img_array = load_img(single_sample, 224)
         print("  result: ", single_img_array.shape)
 
         print("\ntesting loadImageFromDir():")
-        train_cat_datas = loadImageFromDir(cat_train_data_dir, 224)
-        print("  result: ", train_cat_datas.shape)
-
-        print("\ntesting inputDataCreator(train_data_dir, 224, normalize=True):")
-        data, label = inputDataCreator(train_data_dir, 224, normalize=True)
-        print("  result (data shape) : ", data.shape)
-        print("    data: \n", data[0])
-        print("  result (label shape):", label.shape)
-        print("    label: \n", label)
-
-        print("\ntesting inputDataCreator(train_data_dir, 224, normalize=False:")
-        data, label = inputDataCreator(train_data_dir, 224, normalize=False)
-        print("  result (data shape) : ", data.shape)
-        print("    data: \n", data[0])
-        print("  result (label shape): ", label.shape)
-        print("    label: \n", label)
+        train_data = loadImageFromDir(train_normal_dir, 224)
+        print("  result: ", train_data.shape)
 
         print("\ntesting inputDataCreator(train_data_dir, 224, normalize=False, one_hot=True:")
-        data, label = inputDataCreator(train_data_dir,
+        data, label = inputDataCreator(train_dir,
                                        224,
                                        normalize=False,
                                        one_hot=True)
