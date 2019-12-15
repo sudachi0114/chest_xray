@@ -288,6 +288,7 @@ def dataSplit(data, label, train_rate=0.6, validation_rate=0.3, test_rate=0.1, o
     # print(test_label)
 
     # program test -----
+    """ chest_xray data は class に対して不均衡なので、このチェックが効かない
     print("\ntest sequence... ")
     
     # train -----
@@ -334,6 +335,7 @@ def dataSplit(data, label, train_rate=0.6, validation_rate=0.3, test_rate=0.1, o
         cls1_cnt = len(test_label[test_label==1])
     assert cls0_cnt == cls1_cnt
     print("  -> test cleared.\n")
+    """
 
     return train_data, train_label, validation_data, validation_label, test_data, test_label
 
@@ -395,11 +397,15 @@ if __name__ == '__main__':
 
     if args.time:
         print("\ntesting loadImageFromDir() in large data:")
-        origin_dir = os.path.join(prj_root, "dogs_vs_cats_origin")
+        class_list = ["NORMAL", "PNEUMONIA"]
+        origin_dir = os.path.join(prj_root, "datasets", "train", class_list[1])
+
         import time
         start = time.time()
+
         large_test_datas = loadImageFromDir(origin_dir, 224)
         print("  result: ", large_test_datas.shape)
+
         print("elapsed time: ", time.time() - start, " [sec]")
 
 
@@ -411,7 +417,10 @@ if __name__ == '__main__':
 
     if args.split:
         flg = False
-        data, label = inputDataCreator(train_data_dir, 224, normalize=True, one_hot=flg)
+        data, label = inputDataCreator(train_dir,
+                                       224,
+                                       normalize=True,
+                                       one_hot=flg)
         print(data.shape)
         print(label.shape)
 
