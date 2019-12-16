@@ -40,8 +40,8 @@ def main():
                                                normalize=True,
                                                one_hot=True)
 
-    print("train data shape (in batch): ", data_checker.shape)
-    print("train label shape (in batch): ", label_checker.shape)
+    print("train data shape (in batch): ", train_data.shape)
+    print("train label shape (in batch): ", train_label.shape)
     # print("validation data shape:", validation_data.shape)
     # print("validation label shape:", validation_label.shape)
     # print("test data shape:", test_data.shape)
