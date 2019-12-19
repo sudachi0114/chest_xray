@@ -27,8 +27,10 @@ def mv(src_dir, file_list, dist_dir, param=None):
 
     for pic_name in file_list:
         copy_src = os.path.join(src_dir, pic_name)
-        if param:
-            pic_name = str(param) + pic_name
+        if param is not None:
+            fname, ext = pic_name.rsplit('.', 1)
+            fname = "{}_".format(param) + fname
+            pic_name = fname + "." + ext
             copy_dst = os.path.join(dist_dir, pic_name)
         else:
             copy_dst = os.path.join(dist_dir, pic_name)
