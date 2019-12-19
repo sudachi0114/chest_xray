@@ -97,3 +97,15 @@ for i in range(2):
     auged_1_dir = os.path.join(auged_dir, class_list[1])
     print(auged_1_dir)
     print( len(os.listdir(auged_1_dir)) )
+
+# ----------
+
+auged_train_dir = os.path.join(cwd, "train_with_aug")
+
+auged_train_0_dir = os.path.join(auged_train_dir, class_list[0])
+print(auged_train_0_dir)
+print( len(os.listdir(auged_train_0_dir)) )
+
+auged_train_1_dir = os.path.join(auged_train_dir, class_list[1])
+print(auged_train_1_dir)
+print( len(os.listdir(auged_train_1_dir)) )
