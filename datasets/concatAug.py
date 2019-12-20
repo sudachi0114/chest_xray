@@ -1,9 +1,15 @@
 
 import os, shutil
 
-cwd = os.getcwd()
+# train or red_train
+mode = "red_train"
 
-train_dir = os.path.join(cwd, "train")
+
+cwd = os.getcwd()
+if mode == "train":
+    train_dir = os.path.join(cwd, "train")
+elif mode == "red_train":
+    train_dir = os.path.join(cwd, "red_train")
 
 class_list = os.listdir(train_dir)
 ignore_files = ['.DS_Store']
@@ -13,7 +19,10 @@ for fname in ignore_files:
 class_list = sorted(class_list)
 
 # -----
-save_loc = os.path.join(cwd, "train_with_aug")
+if mode == "train":
+    save_loc = os.path.join(cwd, "train_with_aug")
+elif mode == "red_train":
+    save_loc = os.path.join(cwd, "red_train_with_aug")
 os.makedirs(save_loc, exist_ok=True)
 
 save_0_loc = os.path.join(save_loc, class_list[0])
@@ -64,7 +73,10 @@ def main():
     # augmented data -----
     for i in range(2):
         print("その {} ----------".format(i))
-        auged_dir = os.path.join(cwd, "auged_{}".format(i))
+        if mode == "train":
+            auged_dir = os.path.join(cwd, "auged_{}".format(i))
+        elif mode == "red_train":
+            auged_dir = os.path.join(cwd, "red_auged_{}".format(i))
 
         # class 0 ==========
         auged_0_dir = os.path.join(auged_dir, class_list[0])
@@ -90,13 +102,11 @@ def main():
 
 def check():
 
-    auged_train_dir = os.path.join(cwd, "train_with_aug")
-
-    auged_train_0_dir = os.path.join(auged_train_dir, class_list[0])
+    auged_train_0_dir = os.path.join(save_loc, class_list[0])
     print(auged_train_0_dir)
     print( len(os.listdir(auged_train_0_dir)) )
 
-    auged_train_1_dir = os.path.join(auged_train_dir, class_list[1])
+    auged_train_1_dir = os.path.join(save_loc, class_list[1])
     print(auged_train_1_dir)
     print( len(os.listdir(auged_train_1_dir)) )
 
