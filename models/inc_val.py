@@ -91,7 +91,6 @@ def main():
     print(validation_steps, " (validation steps)")                
 
     start = time.time()
-    """
     # 準備体操 -----
     print("\nwarm up sequence .....")
     model.summary()
@@ -108,7 +107,6 @@ def main():
     print("\nfine tuning.....")
     mh.setFineTune(base_model, model, 81)
     model.summary()
-    """
 
     history = model.fit_generator(train_generator,
                                   steps_per_epoch=steps_per_epoch,
