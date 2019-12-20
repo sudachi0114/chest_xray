@@ -82,30 +82,3 @@ test      : 200 * 2 classes
             その上 person の番号が NORMAL の番号と対応するのかも不明..
 """
 
-# ----------
-
-print("\naugment した directory も精査")
-
-for i in range(2):
-    print("その {} ----------".format(i))
-    auged_dir = os.path.join(cwd, "auged_{}".format(i))
-
-    auged_0_dir = os.path.join(auged_dir, class_list[0])
-    print(auged_0_dir)
-    print( len(os.listdir(auged_0_dir)) )
-
-    auged_1_dir = os.path.join(auged_dir, class_list[1])
-    print(auged_1_dir)
-    print( len(os.listdir(auged_1_dir)) )
-
-# ----------
-
-auged_train_dir = os.path.join(cwd, "train_with_aug")
-
-auged_train_0_dir = os.path.join(auged_train_dir, class_list[0])
-print(auged_train_0_dir)
-print( len(os.listdir(auged_train_0_dir)) )
-
-auged_train_1_dir = os.path.join(auged_train_dir, class_list[1])
-print(auged_train_1_dir)
-print( len(os.listdir(auged_train_1_dir)) )
