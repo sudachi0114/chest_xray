@@ -212,7 +212,8 @@ if __name__ == '__main__':
     prj_root = os.path.dirname(cwd)
     data_dir = os.path.join(prj_root, "datasets")
     
-    train_dir = os.path.join(data_dir, "train")
+    #train_dir = os.path.join(data_dir, "train")
+    red_train_dir = os.path.join(data_dir, "red_train")
     # validation_dir = os.path.join(data_dir, "validation")
     # test_dir = os.path.join(data_dir, "test")
 
@@ -231,8 +232,8 @@ if __name__ == '__main__':
     # auger.display_imgaug(train_dir, 224, normalize=False, aug="plural")
 
     for i in range(2):
-        save_loc = os.path.join(data_dir, "auged_{}".format(i))
-        auger.save_imgauged_img(train_dir,
+        save_loc = os.path.join(data_dir, "red_auged_{}".format(i))
+        auger.save_imgauged_img(red_train_dir,
                                 input_size=224,
                                 save_dir=save_loc,
                                 aug='plural')
