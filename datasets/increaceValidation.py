@@ -10,7 +10,7 @@ class_list = os.listdir(train_dir)
 ignore_files = ['.DS_Store']
 for fname in ignore_files:
     if fname in class_list:
-        class_list.recopy(fname)
+        class_list.remove(fname)
 class_list = sorted(class_list)
 
 
