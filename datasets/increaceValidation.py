@@ -18,7 +18,7 @@ class_list = sorted(class_list)
 validation_sep = 500
 
 # increced validation data -----
-validation_dir = os.path.join(cwd, "valiation")
+validation_dir = os.path.join(cwd, "validation")
 os.makedirs(validation_dir, exist_ok=True)
 
 validation_0_dir = os.path.join(validation_dir, class_list[0])
