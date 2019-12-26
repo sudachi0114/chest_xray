@@ -15,7 +15,11 @@ class_list = sorted(class_list)
 
 
 # train の 500枚を validation に分け与える
-validation_sep = 500
+# validation_sep = 500
+
+# train の 500枚を validation に分け与える
+validation_0_sep = 150
+validation_1_sep = 350
 
 # increced validation data -----
 validation_dir = os.path.join(cwd, "validation")
@@ -65,7 +69,8 @@ def main():
     train_0_list = sorted(train_0_list)
     train_0_amount = len(train_0_list)
 
-    sep = train_0_amount - validation_sep
+    #sep = train_0_amount - validation_sep
+    sep = train_0_amount - validation_0_sep
 
     red_train_0_list = train_0_list[:sep]
     inc_validation_0_list = train_0_list[sep:]
@@ -92,7 +97,8 @@ def main():
     train_1_list = sorted(train_1_list)
     train_1_amount = len(train_1_list)
 
-    sep = train_1_amount - validation_sep
+    #sep = train_1_amount - validation_sep
+    sep = train_1_amount - validation_1_sep
 
     red_train_1_list = train_1_list[:sep]
     inc_validation_1_list = train_1_list[sep:]
@@ -146,5 +152,5 @@ def check():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
     check()
