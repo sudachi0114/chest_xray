@@ -21,7 +21,7 @@ input_size = 224
 channel = 3
 target_size = (input_size, input_size)
 input_shpe = (input_size, input_size, channel)
-set_epochs = 20
+set_epochs = 40
 
 
 def main():
