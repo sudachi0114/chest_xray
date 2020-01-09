@@ -2,7 +2,7 @@
 import os, shutil
 
 # train or red_train
-mode = "red_train"
+mode = "train"  # "red_train"
 
 
 cwd = os.getcwd()
@@ -112,5 +112,5 @@ def check():
 
 
 if __name__ == "__main__":
-    main()
+    # main()
     check()
