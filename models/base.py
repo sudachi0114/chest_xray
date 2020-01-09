@@ -29,7 +29,8 @@ def main():
     prj_root = os.path.dirname(cwd)
 
     data_dir = os.path.join(prj_root, "datasets")
-    train_dir = os.path.join(data_dir, "train")
+    # train_dir = os.path.join(data_dir, "train")
+    train_dir = os.path.join(data_dir, "train_with_aug")
     validation_dir = os.path.join(data_dir, "val")
     test_dir = os.path.join(data_dir, "test")
 
