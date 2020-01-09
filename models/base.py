@@ -29,9 +29,16 @@ def main():
     prj_root = os.path.dirname(cwd)
 
     data_dir = os.path.join(prj_root, "datasets")
+
+    # original train_data only or with_augmented data
     # train_dir = os.path.join(data_dir, "train")
-    train_dir = os.path.join(data_dir, "train_with_aug")
-    validation_dir = os.path.join(data_dir, "val")
+    # train_dir = os.path.join(data_dir, "train_with_aug")
+    # validation_dir = os.path.join(data_dir, "val")  # original validation data
+
+    # pair of decreaced train_data and increased validation data
+    train_dir = os.path.join(data_dir, "red_train")
+    validation_dir = os.path.join(data_dir, "validation")
+
     test_dir = os.path.join(data_dir, "test")
 
 
