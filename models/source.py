@@ -35,7 +35,7 @@ def main():
 
 
     # data load ----------
-    data_gen = ImageDataGenerator(rescale=1/225)
+    data_gen = ImageDataGenerator(rescale=1/255)
 
     train_generator = data_gen.flow_from_directory(train_dir,
                                                    target_size=target_size,
@@ -66,7 +66,7 @@ def main():
     
 
     # build model ----------
-    mh = ModelHandler()
+    mh = ModelHandler(input_size, channel)
 
     model = mh.buildTlearnModel(base='mnv2')
 
@@ -91,8 +91,9 @@ def main():
 
 
     print("\nevaluate sequence...")
+    test_steps = test_generator.n // batch_size
     eval_res = model.evaluate_generator(test_generator,
-                                        #batch_size=10,
+                                        steps=test_steps,
                                         verbose=1)
 
     print("result loss: ", eval_res[0])
