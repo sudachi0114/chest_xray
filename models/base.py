@@ -37,6 +37,7 @@ def main():
 
     # pair of decreaced train_data and increased validation data
     train_dir = os.path.join(data_dir, "red_train")
+    # train_dir = os.path.join(data_dir, "red_train_with_aug")
     validation_dir = os.path.join(data_dir, "validation")
 
     test_dir = os.path.join(data_dir, "test")
