@@ -1,25 +1,34 @@
 
+# imports
 import os
 
+# define
 cwd = os.getcwd()
-
+class_list = ["NORMAL", "PNEUMONIA"]
 
 train_dir = os.path.join(cwd, "train")
+validation_dir = os.path.join(cwd, "val")
+test_dir = os.path.join(cwd, "test")
 
+"""
 class_list = os.listdir(train_dir)
 ignore_files = ['.DS_Store']
 for fname in ignore_files:
     if fname in class_list:
         class_list.remove(fname)
 class_list = sorted(class_list)
+"""
 
-train_0_dir = os.path.join(train_dir, class_list[0])
-print(train_0_dir)
-print( len(os.listdir(train_0_dir)) )
+def countAmount(dir_name):
 
-train_1_dir = os.path.join(train_dir, class_list[1])
-print(train_1_dir)
-print( len(os.listdir(train_1_dir)) )
+    for i in range(len(class_list)):
+        sub_dir = os.path.join(dir_name, class_list[i])
+        print(sub_dir)
+        print("  └─ ", len(os.listdir(sub_dir)))
+
+
+
+countAmount(train_dir)
 
 """ train data
 train_0: ../datasets/train/NORMAL
@@ -29,16 +38,8 @@ train_1: ../datasets/train/PNEUMONIA
     # 不均衡すぎる..
 """
 
-validation_dir = os.path.join(cwd, "val")
 
-validation_0_dir = os.path.join(validation_dir, class_list[0])
-print(validation_0_dir)
-print( len(os.listdir(validation_0_dir)) )
-
-validation_1_dir = os.path.join(validation_dir, class_list[1])
-print(validation_1_dir)
-print( len(os.listdir(validation_1_dir)) )
-
+countAmount(validation_dir)
 
 """ validaiton data
 validation_0: ../datasets/val/NORMAL
@@ -48,16 +49,7 @@ validation_1: /datasets/val/PNEUMONIA
     # どういうことなのか..
 """
 
-test_dir = os.path.join(cwd, "test")
-
-test_0_dir = os.path.join(test_dir, class_list[0])
-print(test_0_dir)
-print( len(os.listdir(test_0_dir)) )
-
-test_1_dir = os.path.join(test_dir, class_list[1])
-print(test_1_dir)
-print( len(os.listdir(test_1_dir)) )
-
+countAmount(test_dir)
 
 """ test data
 test_0: ../datasets/test/NORMAL
