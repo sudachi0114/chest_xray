@@ -1,6 +1,7 @@
 
 import os, shutil
 
+# define
 cwd = os.getcwd()
 
 train_dir = os.path.join(cwd, "train")
@@ -13,38 +14,19 @@ for fname in ignore_files:
         class_list.remove(fname)
 class_list = sorted(class_list)
 
-
-# train の 500枚を validation に分け与える
-# validation_sep = 500
-
-# train の 500枚を validation に分け与える
-validation_0_sep = 150
-validation_1_sep = 350
-
-# increced validation data -----
-validation_dir = os.path.join(cwd, "validation")
-os.makedirs(validation_dir, exist_ok=True)
-
-validation_0_dir = os.path.join(validation_dir, class_list[0])
-os.makedirs(validation_0_dir, exist_ok=True)
-
-validation_1_dir = os.path.join(validation_dir, class_list[1])
-os.makedirs(validation_1_dir, exist_ok=True)
-
-    
-# reduced train data -----
-red_train_dir = os.path.join(cwd, "red_train")
-os.makedirs(validation_dir, exist_ok=True)
-
-red_train_0_dir = os.path.join(red_train_dir, class_list[0])
-os.makedirs(red_train_0_dir, exist_ok=True)
-
-red_train_1_dir = os.path.join(red_train_dir, class_list[1])
-os.makedirs(red_train_1_dir, exist_ok=True)
+# train の n 枚を validation に分け与える ( 分け与える枚数が class 毎均一の場合 )
+#   validation_sep = n  # int で設定
+# class0 の n 枚, class1 の m 枚 を validation に分け与える場合 (class で異なる)
+# validation_sep = [n, m]
+validation_sep = [150, 350]
 
 
 
 def copy(src_dir, file_list, dist_dir, param=None):
+
+    print( "copy from {} data".format(src_dir) )
+    print( "  -> to {} .....".format(dist_dir) )
+    print( "    amount: ", len(file_list) )
 
     for pic_name in file_list:
         copy_src = os.path.join(src_dir, pic_name)
@@ -57,98 +39,81 @@ def copy(src_dir, file_list, dist_dir, param=None):
             copy_dst = os.path.join(dist_dir, pic_name)
         shutil.copy(copy_src, copy_dst)
 
+    print( "  Done." )
+
 
 
 def main():
 
-    # class 0 ==========
-    train_0_dir = os.path.join(train_dir, class_list[0])
-    print(train_0_dir)
-    train_0_list = os.listdir(train_0_dir)
-    print("get {} data".format(len(train_0_list)))
-    train_0_list = sorted(train_0_list)
-    train_0_amount = len(train_0_list)
+    print("re-distribute train_data and validation data")
 
-    #sep = train_0_amount - validation_sep
-    sep = train_0_amount - validation_0_sep
+    # increced validation data -----
+    validation_dir = os.path.join(cwd, "validation")
+    os.makedirs(validation_dir, exist_ok=True)
 
-    red_train_0_list = train_0_list[:sep]
-    inc_validation_0_list = train_0_list[sep:]
-    print("reduced train amount: ", len(red_train_0_list))
-    print("validation amount: ", len(inc_validation_0_list) + 8)
-
-    # file copy -----
-    print("copy.....")
-    # train_dir にある red_train_list の画像を red_train_0_dir へ移動
-    copy(train_0_dir, red_train_0_list, red_train_0_dir)
-    print("    Done.")
-
-    print("copy.....")
-    # train_dir にある red_train_list の画像を validaiton_0_dir へ移動
-    copy(train_0_dir, inc_validation_0_list, validation_0_dir)
-    print("    Done.")
+    # decreased train data -----
+    red_train_dir = os.path.join(cwd, "red_train")
+    os.makedirs(validation_dir, exist_ok=True)
 
 
-    # class 1 ==========
-    train_1_dir = os.path.join(train_dir, class_list[1])
-    print(train_1_dir)
-    train_1_list = os.listdir(train_1_dir)
-    print("get {} data".format(len(train_1_list)))
-    train_1_list = sorted(train_1_list)
-    train_1_amount = len(train_1_list)
+    for i, cname in enumerate(class_list):
 
-    #sep = train_1_amount - validation_sep
-    sep = train_1_amount - validation_1_sep
+        # make increaced validation and decreased train directory -----
+        sub_validation_dir = os.path.join(validation_dir, cname)
+        os.makedirs(sub_validation_dir, exist_ok=True)
 
-    red_train_1_list = train_1_list[:sep]
-    inc_validation_1_list = train_1_list[sep:]
-    print("reduced train amount: ", len(red_train_1_list))
-    print("validation amount: ", len(inc_validation_1_list) + 8)
-
-    # file copy -----
-    print("copy.....")
-    # train_dir にある red_train_list の画像を red_train_1_dir へ移動
-    copy(train_1_dir, red_train_1_list, red_train_1_dir)
-    print("    Done.")
-
-    print("copy.....")
-    # train_dir にある red_train_list の画像を validaiton_1_dir へ移動
-    copy(train_1_dir, inc_validation_1_list, validation_1_dir)
-    print("    Done.")
+        sub_red_train_dir = os.path.join(red_train_dir, cname)
+        os.makedirs(sub_red_train_dir, exist_ok=True)
 
 
-    # copy original_val data => validation
-    val_0_dir = os.path.join(val_dir, class_list[0])
-    val_0_list = os.listdir(val_0_dir)
+        # provide each data moving -----
+        sub_train_dir = os.path.join(train_dir, cname)
+        print("\n", sub_train_dir)
 
-    print("copy.....")
-    copy(val_0_dir, val_0_list, validation_0_dir)
-    print("    Done.")    
+        sub_train_list = os.listdir(sub_train_dir)
+        sub_train_amount = len(sub_train_list)
+        print( "    └─ get {} data".format(sub_train_amount) )
 
-    
-    val_1_dir = os.path.join(val_dir, class_list[1])
-    val_1_list = os.listdir(val_1_dir)
+        sub_train_list = sorted(sub_train_list)
 
-    print("copy.....")
-    copy(val_1_dir, val_1_list, validation_1_dir)
-    print("    Done.")
+
+        if type(validation_sep) == int:
+            sep = sub_train_amount - validation_sep
+            print("  give {} train data to validation data.".format(validation_sep))
+        elif (type(validation_sep) == list) and (len(validation_sep) == 2):
+            sep = sub_train_amount - validation_sep[i]
+            print("  give {} train data to validation data.".format(validation_sep[i]))
+        else:
+            pass
+
+
+
+        sub_red_train_list = sub_train_list[:sep]
+        sub_inc_validation_list = sub_train_list[sep:]
+        print("  => decreased train amount: ", len(sub_red_train_list))
+        print("  => increased validation amount: ", len(sub_inc_validation_list), " +8")
+
+        # file copy -----
+        print("\n    !! execute distribution...\n" )
+        copy(sub_train_dir, sub_red_train_list, sub_red_train_dir)
+        copy(sub_train_dir, sub_inc_validation_list, sub_validation_dir)
+        # copy original_val data => validation
+        sub_val_dir = os.path.join(val_dir, cname)
+        sub_val_list = os.listdir(sub_val_dir)
+        copy(sub_val_dir, sub_val_list, sub_validation_dir)
 
 
 
 def check():
 
-    print("reduced train class 0's data amount:")
-    print( len( os.listdir(red_train_0_dir) ) )
+    print("\ncheck function has executed ...")
 
-    print("reduced train class 1's data amount:")
-    print( len( os.listdir(red_train_1_dir) ) )
+    for check_target in ["red_train", "validation"]:
+        for cname in class_list:
+            target_dir = os.path.join(cwd, check_target, cname)
 
-    print("increased validation class 0's data amount:")
-    print( len( os.listdir(validation_0_dir) ) )
-
-    print("increased validation class 1's data amount:")
-    print( len( os.listdir(validation_1_dir) ) )
-
+            print(target_dir)
+            print("  data amount: ", len( os.listdir(target_dir) ) )
 
 
 if __name__ == "__main__":
