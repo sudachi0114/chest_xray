@@ -21,7 +21,7 @@ input_size = 224
 channel = 3
 target_size = (input_size, input_size)
 input_shpe = (input_size, input_size, channel)
-set_epochs = 20
+set_epochs = 40
 
 
 def main():
@@ -30,13 +30,22 @@ def main():
     prj_root = os.path.dirname(cwd)
 
     data_dir = os.path.join(prj_root, "datasets")
+
+    # original train_data only or with_augmented data
     train_dir = os.path.join(data_dir, "train")
-    validation_dir = os.path.join(data_dir, "val")
+    # train_dir = os.path.join(data_dir, "train_with_aug")
+    validation_dir = os.path.join(data_dir, "val")  # original validation data
+
+    # pair of decreaced train_data and increased validation data
+    # train_dir = os.path.join(data_dir, "red_train")
+    # train_dir = os.path.join(data_dir, "train_with_aug")
+    # validation_dir = os.path.join(data_dir, "validation")
+
     test_dir = os.path.join(data_dir, "test")
 
 
     # data load ----------
-    data_gen = ImageDataGenerator(rescale=1/225)
+    data_gen = ImageDataGenerator(rescale=1./255)
 
     train_generator = data_gen.flow_from_directory(train_dir,
                                                    target_size=target_size,
@@ -67,7 +76,7 @@ def main():
     
 
     # build model ----------
-    mh = ModelHandler()
+    mh = ModelHandler(input_size, channel)
 
     # あとで重みの解凍をできるように base_model を定義
     base_model = mh.buildMnv1Base()
@@ -130,8 +139,9 @@ def main():
 
 
     print("\nevaluate sequence...")
+    test_steps = test_generator.n // batch_size
     eval_res = model.evaluate_generator(test_generator,
-                                        #batch_size=10,
+                                        steps=test_steps,
                                         verbose=1)
 
     print("result loss: ", eval_res[0])
