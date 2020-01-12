@@ -8,10 +8,10 @@ mode = "train"  # "red_train"
 cwd = os.getcwd()
 if mode == "train":
     train_dir = os.path.join(cwd, "train")
-    save_loc = os.path.join(cwd, "new_train_with_aug")
+    save_loc = os.path.join(cwd, "train_with_aug")
 elif mode == "red_train":
     train_dir = os.path.join(cwd, "red_train")
-    save_loc = os.path.join(cwd, "new_red_train_with_aug")
+    save_loc = os.path.join(cwd, "red_train_with_aug")
 os.makedirs(save_loc, exist_ok=True)
 
 
@@ -21,8 +21,6 @@ for fname in ignore_files:
     if fname in class_list:
         class_list.remove(fname)
 class_list = sorted(class_list)
-
-
 
 
 
@@ -80,21 +78,17 @@ def main():
 
 def check():
 
-    save_loc = os.path.join(cwd, "new_train_with_aug")
+    print("\ncheck function has executed ...")
     print(save_loc)
-    for cname in class_list:
-        sub_auged_dir = os.path.join(save_loc, cname)
-        print(sub_auged_dir) 
-        print( len(os.listdir(sub_auged_dir)) )
 
-    save_loc = os.path.join(cwd, "train_with_aug")
-    print(save_loc)
-    for cname in class_list:
-        sub_auged_dir = os.path.join(save_loc, cname)
-        print(sub_auged_dir) 
-        print( len(os.listdir(sub_auged_dir)) )
 
     
+    for cname in class_list:
+        sub_auged_dir = os.path.join(save_loc, cname)
+        print(sub_auged_dir)
+        print("  data amount: ", len( os.listdir(sub_auged_dir) ) )
+
+
 if __name__ == "__main__":
     # main()
     check()
