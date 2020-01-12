@@ -80,8 +80,6 @@ def check():
 
     print("\ncheck function has executed ...")
     print(save_loc)
-
-
     
     for cname in class_list:
         sub_auged_dir = os.path.join(save_loc, cname)
