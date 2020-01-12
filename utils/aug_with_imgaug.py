@@ -231,12 +231,17 @@ if __name__ == '__main__':
 
     # auger.display_imgaug(train_dir, 224, normalize=False, aug="plural")
 
-
+    mode = "train"  # "red_train"
     for i in range(2):
-        save_loc = os.path.join(data_dir, "auged_{}".format(i))
-        # save_loc = os.path.join(data_dir, "red_auged_{}".format(i))
-        auger.save_imgauged_img(train_dir,
-                                # red_train_dir,
+
+        if mode == "train":
+            save_loc = os.path.join(data_dir, "auged_{}".format(i))
+            target_dir = train_dir
+        elif mode == "red_train":
+            save_loc = os.path.join(data_dir, "red_auged_{}".format(i))
+            target_dir = red_train_dir
+
+        auger.save_imgauged_img(target_dir,
                                 input_size=224,
                                 save_dir=save_loc,
                                 aug='plural')
