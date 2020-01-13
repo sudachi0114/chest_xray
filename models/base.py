@@ -1,18 +1,37 @@
 
-# simple に転移学習モデルを組んで流すだけ
+# simple に転移学習 (MNV1) モデルを組んで流す
 
 import os, sys
 sys.path.append(os.pardir)
 
 import time
+import numpy as np
+
+"""
 import tensorflow as tf
 config=tf.ConfigProto()
 config.gpu_options.allow_growth=True
 sess=tf.Session(config=config)
+"""
+
+import tensorflow as tf
+import keras
+from keras import backend as K
+config = tf.ConfigProto()
+config.gpu_options.per_process_gpu_memory_fraction=0.5
+sess = tf.Session(config=config)
+K.set_session(sess)
+
+print("TensorFlow version is ", tf.__version__)
+print("Keras version is ", keras.__version__)
 
 from keras.preprocessing.image import ImageDataGenerator
-#from utils.img_utils import inputDataCreator
+from keras.callbacks import EarlyStopping
+
 from utils.model_handler import ModelHandler
+
+from sklearn.metrics import confusion_matrix
+
 
 # define -----
 batch_size = 16
@@ -20,7 +39,7 @@ input_size = 224
 channel = 3
 target_size = (input_size, input_size)
 input_shpe = (input_size, input_size, channel)
-set_epochs = 20
+set_epochs = 40
 
 
 def main():
@@ -30,17 +49,28 @@ def main():
 
     data_dir = os.path.join(prj_root, "datasets")
 
-    # original train_data only or with_augmented data
-    # train_dir = os.path.join(data_dir, "train")
-    # train_dir = os.path.join(data_dir, "train_with_aug")
-    # validation_dir = os.path.join(data_dir, "val")  # original validation data
+    use_da_data = False
+    increase_val = False
+    print( "\nmode: Use Augmented data: {} | increase validation data: {}".format(use_da_data, increase_val) )
+
+    # First define original train_data only as train_dir
+    train_dir = os.path.join(data_dir, "train")
+    if (use_da_data == True) and (increase_val == False):
+        # with_augmented data (no validation increase)
+        train_dir = os.path.join(data_dir, "train_with_aug")
+    validation_dir = os.path.join(data_dir, "val")  # original validation data
 
     # pair of decreaced train_data and increased validation data
-    train_dir = os.path.join(data_dir, "red_train")
-    # train_dir = os.path.join(data_dir, "red_train_with_aug")
-    validation_dir = os.path.join(data_dir, "validation")
+    if (increase_val == True):
+        train_dir = os.path.join(data_dir, "red_train")
+        if (use_da_data == True):
+            train_dir = os.path.join(data_dir, "red_train_with_aug")
+        validation_dir = os.path.join(data_dir, "validation")
 
     test_dir = os.path.join(data_dir, "test")
+
+    print("\ntrain_dir: ", train_dir)
+    print("validation_dir: ", validation_dir)
 
 
     # data load ----------
@@ -72,15 +102,25 @@ def main():
     # print("validation label shape:", validation_label.shape)
     # print("test data shape:", test_data.shape)
     # print("test label shape:", test_label.shape)
-    
+
+
 
     # build model ----------
     mh = ModelHandler(input_size, channel)
 
-    model = mh.buildTlearnModel(base='mnv2')
+    model = mh.buildTlearnModel(base='mnv1')
 
     model.summary()
 
+
+    # instance EarlyStopping -----
+    es = EarlyStopping(monitor='val_loss',
+                       patience=5,
+                       verbose=1,
+                       restore_best_weights=True)
+
+
+    
 
     print("\ntraining sequence start .....")
     steps_per_epoch = train_generator.n // batch_size
@@ -95,6 +135,7 @@ def main():
                                   epochs=set_epochs,
                                   validation_data=validation_generator,
                                   validation_steps=validation_steps,
+                                  callbacks=[es],
                                   verbose=1)
     print( "elapsed time (for train): {} [sec]".format(time.time() - start) )
 
@@ -107,6 +148,37 @@ def main():
 
     print("result loss: ", eval_res[0])
     print("result score: ", eval_res[1])
+
+
+    # confusion matrix -----
+    test_label = []
+    for i in range(batch_size):
+        _, tmp = next(test_generator)
+        if i == 0:
+            test_label = tmp
+        else:
+            test_label = np.vstack((test_label, tmp))
+    # print(test_label)
+
+    pred = model.predict_generator(test_generator,
+                                   steps=test_steps,
+                                   verbose=1)
+
+    idx_label = np.argmax(test_label, axis=-1)  # one_hot => normal
+    idx_pred = np.argmax(pred, axis=-1)  # 各 class の確率 => 最も高い値を持つ class
+    cm = confusion_matrix(idx_label, idx_pred)
+
+    # Calculate Precision and Recall
+    tn, fp, fn, tp = cm.ravel()
+
+    # 適合率 (precision):
+    precision = tp/(tp+fp)
+    print("Precision of the model is {}".format(precision))
+
+    # 再現率 (recall):
+    recall = tp/(tp+fn)
+    print("Recall of the model is {}".format(recall))
+
 
 
 if __name__ == '__main__':
