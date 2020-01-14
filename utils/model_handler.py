@@ -22,7 +22,9 @@ class ModelHandler:
         print("class mode:", self.CLASS_MODE)
 
 
-    def modelCompile(self, model):
+    def modelCompile(self, model, lr=1e-4):
+
+        _lr = lr
 
         if self.CLASS_MODE == 'categorical':
             adapt_loss = 'categorical_crossentropy'
@@ -30,9 +32,11 @@ class ModelHandler:
             adapt_loss = 'binary_crossentropy',
 
         model.compile(loss=adapt_loss,
-                      optimizer=Adam(lr=1e-4),
+                      optimizer=Adam(lr=_lr),
                       metrics=['accuracy'])
 
+        print("set loss: ", adapt_loss)
+        print("set lr = ", _lr)
         print( "\nyour model has compiled.\n" )
 
         return model
@@ -173,7 +177,7 @@ class ModelHandler:
         return self.modelCompile(model)
 
 
-    def setFineTune(self, base_model, model, at):
+    def setFineTune(self, base_model, model, at, fine_lr=2e-5):
 
         print("execute prepare of fine-tuning")
 
@@ -202,7 +206,7 @@ class ModelHandler:
         # print("(base_model) trainable weights after freeze: ", len(base_model.trainable_weights))
         print("trainable weights after freeze: ", len(model.trainable_weights))
         
-        return self.modelCompile(model)
+        return self.modelCompile(model, lr=fine_lr)
 
 
 
