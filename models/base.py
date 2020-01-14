@@ -27,10 +27,8 @@ print("Keras version is ", keras.__version__)
 
 from keras.preprocessing.image import ImageDataGenerator
 from keras.callbacks import EarlyStopping
-
-from utils.model_handler import ModelHandler
-
 from sklearn.metrics import confusion_matrix
+from utils.model_handler import ModelHandler
 
 
 # define -----
@@ -74,7 +72,7 @@ def main():
 
 
     # data load ----------
-    data_gen = ImageDataGenerator(rescale=1/255)
+    data_gen = ImageDataGenerator(rescale=1./255)
 
     train_generator = data_gen.flow_from_directory(train_dir,
                                                    target_size=target_size,
@@ -129,7 +127,6 @@ def main():
     print(validation_steps, " (validation steps)")                
 
     start = time.time()
-
     history = model.fit_generator(train_generator,
                                   steps_per_epoch=steps_per_epoch,
                                   epochs=set_epochs,
@@ -151,25 +148,33 @@ def main():
 
 
     # confusion matrix -----
-    test_label = []
-    for i in range(batch_size):
-        _, tmp = next(test_generator)
-        if i == 0:
-            test_label = tmp
-        else:
-            test_label = np.vstack((test_label, tmp))
-    # print(test_label)
-
+    print("\nconfusion matrix")
     pred = model.predict_generator(test_generator,
                                    steps=test_steps,
-                                   verbose=1)
+                                   verbose=3)
+
+    test_label = []
+    for i in range(test_steps):
+        _, tmp_tl = next(test_generator)
+        if i == 0:
+            test_label = tmp_tl
+        else:
+            test_label = np.vstack((test_label, tmp_tl))    
 
     idx_label = np.argmax(test_label, axis=-1)  # one_hot => normal
     idx_pred = np.argmax(pred, axis=-1)  # 各 class の確率 => 最も高い値を持つ class
+    
     cm = confusion_matrix(idx_label, idx_pred)
 
     # Calculate Precision and Recall
     tn, fp, fn, tp = cm.ravel()
+
+
+    print("  | T  | F ")
+    print("--+----+---")
+    print("N | {} | {}".format(tn, fn))
+    print("--+----+---")
+    print("P | {} | {}".format(tp, fp))
 
     # 適合率 (precision):
     precision = tp/(tp+fp)
