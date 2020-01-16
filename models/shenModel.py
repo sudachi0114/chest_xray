@@ -1,3 +1,4 @@
+
 from __future__ import absolute_import, division, print_function, unicode_literals
 
 import os, csv, json
@@ -17,10 +18,37 @@ import pandas as pd
 
 
 def image_network_train(learn_data_path):
+
+    """
     train_dir = os.path.join(learn_data_path, 'train')
-    #validation_dir = os.path.join(learn_data_path, 'validation')
-    validation_dir = os.path.join(learn_data_path, 'val')
+    validation_dir = os.path.join(learn_data_path, 'validation')
     test_dir = os.path.join(learn_data_path, 'test')
+    """
+
+    # data selector ----------
+    use_da_data = False
+    increase_val = False
+    print( "\nmode: Use Augmented data: {} | increase validation data: {}".format(use_da_data, increase_val) )
+
+    # First define original train_data only as train_dir
+    train_dir = os.path.join(data_dir, "train")
+    if (use_da_data == True) and (increase_val == False):
+        # with_augmented data (no validation increase)
+        train_dir = os.path.join(data_dir, "train_with_aug")
+    validation_dir = os.path.join(data_dir, "val")  # original validation data
+
+    # pair of decreaced train_data and increased validation data
+    if (increase_val == True):
+        train_dir = os.path.join(data_dir, "red_train")
+        if (use_da_data == True):
+            train_dir = os.path.join(data_dir, "red_train_with_aug")
+        validation_dir = os.path.join(data_dir, "validation")
+
+    test_dir = os.path.join(data_dir, "test")
+
+    print("\ntrain_dir: ", train_dir)
+    print("validation_dir: ", validation_dir)
+
 
     # calcucate the num of category
     num_category = 0
