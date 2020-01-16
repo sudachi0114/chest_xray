@@ -6,6 +6,7 @@ sys.path.append(os.pardir)
 
 import time
 import numpy as np
+np.random.seed(seed=114)
 
 """
 import tensorflow as tf
@@ -89,7 +90,7 @@ def main():
     test_generator = data_gen.flow_from_directory(test_dir,
                                                   target_size=target_size,
                                                   batch_size=batch_size,
-                                                  shuffle=True,
+                                                  shuffle=False,
                                                   class_mode='categorical')
 
     data_checker, label_checker = next(train_generator)
@@ -113,6 +114,7 @@ def main():
 
     # instance EarlyStopping -----
     es = EarlyStopping(monitor='val_loss',
+                       # monitor='val_accuracy',
                        patience=5,
                        verbose=1,
                        restore_best_weights=True)
