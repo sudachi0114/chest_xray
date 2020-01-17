@@ -87,7 +87,7 @@ def main():
     test_generator = data_gen.flow_from_directory(test_dir,
                                                   target_size=target_size,
                                                   batch_size=batch_size,
-                                                  shuffle=True,
+                                                  shuffle=False,
                                                   class_mode='categorical')
 
     data_checker, label_checker = next(train_generator)
