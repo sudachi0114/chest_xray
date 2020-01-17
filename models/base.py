@@ -8,17 +8,11 @@ import time
 import numpy as np
 np.random.seed(seed=114)
 
-"""
-import tensorflow as tf
-config=tf.ConfigProto()
-config.gpu_options.allow_growth=True
-sess=tf.Session(config=config)
-"""
-
 import tensorflow as tf
 import keras
 from keras import backend as K
 config = tf.ConfigProto()
+# config.gpu_options.allow_growth=True
 config.gpu_options.per_process_gpu_memory_fraction=0.5
 sess = tf.Session(config=config)
 K.set_session(sess)
